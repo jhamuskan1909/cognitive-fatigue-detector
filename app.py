@@ -16,7 +16,7 @@ from sklearn.tree import DecisionTreeClassifier
 app = Flask(__name__)
 app.secret_key = "cogni_fatigue_secret_2026"
 
-genai.configure(api_key="YOUR_GEMINI_API_KEY")
+genai.configure(api_key="AIzaSyBXvDdiLjXbTEC2TpDjo83MmHFr7mtQMmE")
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
