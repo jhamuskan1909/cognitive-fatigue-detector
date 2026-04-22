@@ -1,0 +1,24 @@
+[
+  {
+    "date": "2026-04-22 18:00",
+    "level": "Low",
+    "score": 35.0
+  },
+  {
+    "date": "2026-04-22 18:05",
+    "level": "Medium",
+    "score": 33.0,
+    "mode": "student"
+  },
+  {
+    "date": "2026-04-22 22:57",
+    "level": "Medium",
+    "score": 54.5
+  },
+  {
+    "date": "2026-04-22 22:57",
+    "level": "Medium",
+    "score": 64.0,
+    "mode": "student"
+  }
+]
