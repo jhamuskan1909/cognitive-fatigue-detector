@@ -640,6 +640,42 @@ function startPomo() {
 }
 function stopPomo() { clearInterval(pomoTimer); pomoTimer = null; pomoSecs = 25*60; pomoSession = 1; pomoBreak = false; document.getElementById('pomo-display').textContent = '25:00'; document.getElementById('pomo-status').textContent = 'Ready to focus 🍅'; document.getElementById('pomo-dots').innerHTML = ''; }
 </script>
+
+<!-- Muskmoon Chatbot -->
+<div id="muskmoon-btn" onclick="toggleChat()" style="position:fixed;bottom:30px;right:30px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#ec4899);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 0 20px rgba(167,139,250,0.5);z-index:9999;font-size:26px;">🌙</div>
+
+<div id="muskmoon-chat" style="display:none;position:fixed;bottom:100px;right:30px;width:320px;height:420px;background:#1a1a2e;border:1px solid #a78bfa;border-radius:16px;z-index:9999;flex-direction:column;overflow:hidden;box-shadow:0 0 30px rgba(167,139,250,0.3);">
+  <div style="background:linear-gradient(135deg,#a78bfa,#ec4899);padding:14px 16px;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:20px;">🌙</span>
+    <div>
+      <div style="color:white;font-weight:700;font-size:14px;">Muskmoon</div>
+      <div style="color:rgba(255,255,255,0.8);font-size:11px;">Your personal companion</div>
+    </div>
+  </div>
+  <div id="chat-messages" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;height:280px;">
+    <div style="background:#2d2d4e;padding:10px 14px;border-radius:12px;color:#e2e8f0;font-size:13px;max-width:85%;">Hey! I'm Muskmoon 🌙 I'm here for you — talk to me about anything 💜</div>
+  </div>
+  <div style="padding:10px;border-top:1px solid #2d2d4e;display:flex;gap:8px;">
+    <input id="chat-input" type="text" placeholder="Talk to me..." onkeypress="if(event.key==='Enter')sendMessage()" style="flex:1;background:#2d2d4e;border:none;border-radius:20px;padding:8px 14px;color:white;font-size:13px;outline:none;"/>
+    <button onclick="sendMessage()" style="background:linear-gradient(135deg,#a78bfa,#ec4899);border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:16px;">➤</button>
+  </div>
+</div>
+
+<script>
+function toggleChat() {
+  const chat = document.getElementById('muskmoon-chat');
+  chat.style.display = chat.style.display === 'none' ? 'flex' : 'none';
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const messages = document.getElementById('chat-messages');
+  const text = input.value.trim();
+  if (!text) return;
+
+  messages.innerHTML += `<div style="background:linear-gradient(135deg,#a78bfa,#ec4899);padding:10px 14px;border-radius:12px;color:white;font-size:13px;max-width:85%;align-self:flex-end;">${text}</div>`;
+  input.value = '';
+  messages.innerHTML += `<div id="typing" style="background:#2d2d4e;padding:10px 14px;border
 </body>
 </html>
 

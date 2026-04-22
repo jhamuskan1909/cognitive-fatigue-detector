@@ -1,3 +1,5 @@
+import google.generativeai as genai
+
 from flask import Flask, render_template, request, jsonify, session
 import pandas as pd
 import numpy as np
@@ -13,6 +15,23 @@ from sklearn.tree import DecisionTreeClassifier
 
 app = Flask(__name__)
 app.secret_key = "cogni_fatigue_secret_2026"
+
+genai.configure(api_key="YOUR_GEMINI_API_KEY")
+
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    data = request.json
+    user_message = data.get('message', '')
+    model = genai.GenerativeModel('gemini-pro')
+    response = model.generate_content(
+        f"""You are Muskmoon 🌙, a warm, empathetic AI companion. 
+        You adapt your tone based on what the user needs — sometimes friendly like a best friend, 
+        sometimes calm like a therapist, sometimes fun and witty. 
+        You listen deeply and respond with genuine care. 
+        Never judge. Always support. 
+        User says: {user_message}"""
+    )
+    return jsonify({'response': response.text})
 
 np.random.seed(42)
 n = 500
@@ -262,6 +281,25 @@ def history():
 @app.route("/api/features")
 def features():
     return jsonify(feature_importances)
+
+genai.configure(api_key="AIzaSyBXvDdiLjXbTEC2TpDjo83MmHFr7mtQMmE")
+
+def chat():
+    data = request.json
+    user_message = data.get('message', '')
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    response = model.generate_content(
+        f"""You are Muskmoon 🌙, a warm and empathetic AI companion built into a wellness app.
+        You adapt your tone based on what the user needs.
+        If they're sad — be gentle and comforting like a best friend.
+        If they need advice — be wise and thoughtful like a therapist.
+        If they want to vent — just listen and validate.
+        If they're happy — be fun and celebratory.
+        Topics include relationships, stress, studies, family, feelings — anything personal.
+        Never judge. Always support. Keep responses concise and warm.
+        User says: {user_message}"""
+    )
+    return jsonify({'response': response.text})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
