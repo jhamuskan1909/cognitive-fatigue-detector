@@ -29,7 +29,10 @@ def chat():
     }
     response = req.post(url, json=payload)
     result = response.json()
-    reply = result['candidates'][0]['content']['parts'][0]['text']
+    try:
+        reply = result['candidates'][0]['content']['parts'][0]['text']
+    except:
+        reply = str(result)
     return jsonify({'response': reply})
 
 np.random.seed(42)
