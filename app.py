@@ -22,12 +22,8 @@ def chat():
     user_message = data.get('message', '')
     genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
     model = genai.GenerativeModel('gemini-1.5-flash')
-    response = model.generate_content(
-        f"""You are Muskmoon 🌙, a warm empathetic AI companion.
-        Adapt your tone to what the user needs.
-        Never judge. Always support. Keep responses warm and concise.
-        User says: {user_message}"""
-    )
+    prompt = f"You are Muskmoon, a warm empathetic AI companion. Adapt your tone to what the user needs. Never judge. Always support. Keep responses warm and concise. User says: {user_message}"
+    response = model.generate_content(prompt)
     return jsonify({'response': response.text})
 
 np.random.seed(42)
