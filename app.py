@@ -1,4 +1,4 @@
-import google.generativeai as genai
+from google import genai
 
 from flask import Flask, render_template, request, jsonify, session
 import pandas as pd
@@ -16,19 +16,15 @@ from sklearn.tree import DecisionTreeClassifier
 app = Flask(__name__)
 app.secret_key = "cogni_fatigue_secret_2026"
 
-genai.configure(api_key="your_actual_key_here")
-
-@app.route('/api/chat', methods=['POST'])
 def chat():
     data = request.json
     user_message = data.get('message', '')
-    model = genai.GenerativeModel('gemini-1.5-flash')
-    response = model.generate_content(
-        f"""You are Muskmoon 🌙, a warm, empathetic AI companion. 
-        You adapt your tone based on what the user needs — sometimes friendly like a best friend, 
-        sometimes calm like a therapist, sometimes fun and witty. 
-        You listen deeply and respond with genuine care. 
-        Never judge. Always support. 
+    client = genai.Client(api_key="YOUR_NEW_KEY_HERE")
+    response = client.models.generate_content(
+        model='gemini-2.0-flash',
+        contents=f"""You are Muskmoon 🌙, a warm empathetic AI companion.
+        Adapt your tone to what the user needs.
+        Never judge. Always support. Keep responses warm and concise.
         User says: {user_message}"""
     )
     return jsonify({'response': response.text})
@@ -281,8 +277,6 @@ def history():
 @app.route("/api/features")
 def features():
     return jsonify(feature_importances)
-
-genai.configure(api_key="AIzaSyBXvDdiLjXbTEC2TpDjo83MmHFr7mtQMmE")
 
 def chat():
     data = request.json
