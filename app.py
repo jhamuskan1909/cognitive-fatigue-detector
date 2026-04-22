@@ -16,13 +16,13 @@ from sklearn.tree import DecisionTreeClassifier
 app = Flask(__name__)
 app.secret_key = "cogni_fatigue_secret_2026"
 
-genai.configure(api_key="AIzaSyBXvDdiLjXbTEC2TpDjo83MmHFr7mtQMmE")
+genai.configure(api_key="your_actual_key_here")
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
     data = request.json
     user_message = data.get('message', '')
-    model = genai.GenerativeModel('gemini-pro')
+    model = genai.GenerativeModel('gemini-1.5-flash')
     response = model.generate_content(
         f"""You are Muskmoon 🌙, a warm, empathetic AI companion. 
         You adapt your tone based on what the user needs — sometimes friendly like a best friend, 
