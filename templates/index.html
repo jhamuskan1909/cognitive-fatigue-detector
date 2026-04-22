@@ -4,459 +4,141 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>CogniFatigue — Wellness Intelligence</title>
-<div style="font-size: 13px; color: #a78bfa; letter-spacing: 2px; margin-top: -4px; font-style: italic;">
-   Track your mind, own your day
-</div>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <style>
   :root {
-    --bg: #080c14;
-    --surface: #0d1424;
-    --card: #111827;
-    --border: #1e2d45;
-    --accent: #00d4ff;
-    --accent2: #7c3aed;
-    --green: #22c55e;
-    --orange: #f59e0b;
-    --red: #ef4444;
-    --text: #e2e8f0;
-    --muted: #64748b;
-    --font-head: 'Syne', sans-serif;
-    --font-mono: 'Space Mono', monospace;
+    --bg: #080c14; --surface: #0d1424; --card: #111827; --border: #1e2d45;
+    --accent: #00d4ff; --accent2: #7c3aed; --green: #22c55e; --orange: #f59e0b; --red: #ef4444;
+    --text: #e2e8f0; --muted: #64748b; --font-head: 'Syne', sans-serif; --font-mono: 'Space Mono', monospace;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-head);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Animated background grid */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* Glow orbs */
-  .orb {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(100px);
-    pointer-events: none;
-    z-index: 0;
-  }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-head); min-height: 100vh; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+  .orb { position: fixed; border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 0; }
   .orb1 { width: 400px; height: 400px; background: rgba(0,212,255,0.06); top: -100px; right: -100px; }
   .orb2 { width: 300px; height: 300px; background: rgba(124,58,237,0.08); bottom: 100px; left: -50px; }
 
-  /* Header */
-  header {
-    position: relative;
-    z-index: 10;
-    padding: 20px 40px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: rgba(8,12,20,0.8);
-    backdrop-filter: blur(20px);
-  }
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .logo-icon {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 10px;
+  /* ── Auth Screen ── */
+  #auth-screen {
+    position: fixed; inset: 0; z-index: 100;
     display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
+    background: var(--bg);
   }
-  .logo-text {
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-  }
-  .logo-text span { color: var(--accent); }
-  .header-badge {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--accent);
-    border: 1px solid rgba(0,212,255,0.3);
-    padding: 4px 10px;
+  .auth-box {
+    background: var(--card);
+    border: 1px solid var(--border);
     border-radius: 20px;
-    background: rgba(0,212,255,0.05);
-  }
-
-  /* Nav Tabs */
-  .nav-tabs {
-    display: flex;
-    gap: 4px;
-    padding: 0 40px;
-    border-bottom: 1px solid var(--border);
-    background: rgba(8,12,20,0.6);
-    position: relative;
-    z-index: 10;
-    overflow-x: auto;
-  }
-  .tab-btn {
-    padding: 14px 20px;
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-family: var(--font-head);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    white-space: nowrap;
-    transition: all 0.2s;
-  }
-  .tab-btn:hover { color: var(--text); }
-  .tab-btn.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
-
-  /* Main layout */
-  main {
+    padding: 40px;
+    width: 100%;
+    max-width: 420px;
     position: relative;
     z-index: 1;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 40px 20px;
   }
+  .auth-logo { text-align: center; margin-bottom: 28px; }
+  .auth-logo .icon { font-size: 40px; margin-bottom: 8px; }
+  .auth-logo h1 { font-size: 24px; font-weight: 800; }
+  .auth-logo h1 span { color: var(--accent); }
+  .auth-logo p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .auth-tabs { display: flex; gap: 4px; margin-bottom: 24px; background: var(--surface); padding: 4px; border-radius: 10px; }
+  .auth-tab { flex: 1; padding: 10px; border: none; background: none; color: var(--muted); font-family: var(--font-head); font-weight: 700; font-size: 14px; cursor: pointer; border-radius: 8px; transition: all 0.2s; }
+  .auth-tab.active { background: var(--card); color: var(--accent); }
+  .auth-form { display: none; }
+  .auth-form.active { display: block; }
+  .auth-input-group { margin-bottom: 16px; }
+  .auth-input-group label { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; }
+  .auth-input-group input { width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 12px 16px; border-radius: 10px; font-family: var(--font-head); font-size: 14px; outline: none; transition: border-color 0.2s; }
+  .auth-input-group input:focus { border-color: var(--accent); }
+  .auth-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--accent), #0099cc); color: #000; font-family: var(--font-head); font-weight: 800; font-size: 15px; border: none; border-radius: 12px; cursor: pointer; margin-top: 8px; transition: all 0.2s; }
+  .auth-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,212,255,0.3); }
+  .auth-error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--red); padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none; }
 
-  /* Panels */
+  /* ── Main App ── */
+  #app-screen { display: none; }
+  header { position: relative; z-index: 10; padding: 16px 40px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: rgba(8,12,20,0.8); backdrop-filter: blur(20px); }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .logo-text { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+  .logo-text span { color: var(--accent); }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .user-badge { font-size: 13px; color: var(--muted); background: var(--surface); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; }
+  .user-badge strong { color: var(--accent); }
+  .logout-btn { background: none; border: 1px solid var(--border); color: var(--muted); padding: 6px 14px; border-radius: 8px; font-family: var(--font-head); font-size: 13px; cursor: pointer; transition: all 0.2s; }
+  .logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+  .nav-tabs { display: flex; gap: 4px; padding: 0 40px; border-bottom: 1px solid var(--border); background: rgba(8,12,20,0.6); position: relative; z-index: 10; overflow-x: auto; }
+  .tab-btn { padding: 14px 20px; background: none; border: none; color: var(--muted); font-family: var(--font-head); font-size: 14px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.2s; }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  main { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
   .panel { display: none; }
   .panel.active { display: block; animation: fadeIn 0.3s ease; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* Cards */
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    margin-bottom: 20px;
-  }
-  .card-title {
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: var(--muted);
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .card-title::before {
-    content: '';
-    width: 3px; height: 14px;
-    background: var(--accent);
-    border-radius: 2px;
-  }
-
-  /* Grid */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 20px; }
+  .card-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+  .card-title::before { content: ''; width: 3px; height: 14px; background: var(--accent); border-radius: 2px; }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
   @media (max-width: 700px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
 
-  /* Form elements */
   .form-group { margin-bottom: 16px; }
-  label {
-    display: block;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
-  input[type="range"] {
-    width: 100%;
-    -webkit-appearance: none;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    outline: none;
-    margin-bottom: 6px;
-  }
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 16px; height: 16px;
-    background: var(--accent);
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 0 8px rgba(0,212,255,0.5);
-  }
-  .range-val {
-    font-family: var(--font-mono);
-    font-size: 13px;
-    color: var(--accent);
-    text-align: right;
-  }
-  select, input[type="number"] {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-family: var(--font-head);
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  select:focus, input[type="number"]:focus { border-color: var(--accent); }
+  label { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; }
+  input[type="range"] { width: 100%; -webkit-appearance: none; height: 4px; background: var(--border); border-radius: 2px; outline: none; margin-bottom: 6px; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: var(--accent); border-radius: 50%; cursor: pointer; box-shadow: 0 0 8px rgba(0,212,255,0.5); }
+  .range-val { font-family: var(--font-mono); font-size: 13px; color: var(--accent); text-align: right; }
+  select { width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 10px; font-family: var(--font-head); font-size: 14px; outline: none; }
 
-  /* Button */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 14px 28px;
-    background: linear-gradient(135deg, var(--accent), #0099cc);
-    color: #000;
-    font-family: var(--font-head);
-    font-weight: 800;
-    font-size: 14px;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    letter-spacing: 0.5px;
-    transition: all 0.2s;
-    width: 100%;
-    justify-content: center;
-    margin-top: 8px;
-  }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: linear-gradient(135deg, var(--accent), #0099cc); color: #000; font-family: var(--font-head); font-weight: 800; font-size: 14px; border: none; border-radius: 12px; cursor: pointer; width: 100%; justify-content: center; margin-top: 8px; transition: all 0.2s; }
   .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,212,255,0.3); }
-  .btn:active { transform: translateY(0); }
   .btn.loading { opacity: 0.7; pointer-events: none; }
 
-  /* Result section */
   #result-section, #student-result { display: none; }
-
-  /* Fatigue meter */
-  .meter-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 0;
-  }
-  .meter-ring {
-    position: relative;
-    width: 160px; height: 160px;
-  }
+  .meter-wrap { display: flex; flex-direction: column; align-items: center; padding: 20px 0; }
+  .meter-ring { position: relative; width: 160px; height: 160px; }
   .meter-ring svg { transform: rotate(-90deg); }
-  .meter-ring circle {
-    fill: none;
-    stroke-width: 12;
-    stroke-linecap: round;
-  }
+  .meter-ring circle { fill: none; stroke-width: 12; stroke-linecap: round; }
   .ring-bg { stroke: var(--border); }
   .ring-fill { transition: stroke-dashoffset 1s ease; }
-  .meter-center {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  .meter-score {
-    font-family: var(--font-mono);
-    font-size: 32px;
-    font-weight: 700;
-    line-height: 1;
-  }
-  .meter-label {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 2px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .level-badge {
-    margin-top: 16px;
-    padding: 6px 20px;
-    border-radius: 20px;
-    font-weight: 800;
-    font-size: 14px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
+  .meter-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .meter-score { font-family: var(--font-mono); font-size: 32px; font-weight: 700; line-height: 1; }
+  .meter-label { font-size: 11px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 1px; }
+  .level-badge { margin-top: 16px; padding: 6px 20px; border-radius: 20px; font-weight: 800; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; }
   .level-Low { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
   .level-Medium { background: rgba(245,158,11,0.15); color: var(--orange); border: 1px solid rgba(245,158,11,0.3); }
   .level-High { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
 
-  /* Suggestions */
-  .suggestion-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent);
-    border-radius: 10px;
-    padding: 12px 16px;
-    margin-bottom: 10px;
-    font-size: 14px;
-    animation: slideIn 0.3s ease forwards;
-    opacity: 0;
-  }
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateX(-10px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
+  .suggestion-item { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; font-size: 14px; animation: slideIn 0.3s ease forwards; opacity: 0; }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+  .challenge-box { background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(0,212,255,0.1)); border: 1px solid rgba(124,58,237,0.3); border-radius: 12px; padding: 16px 20px; margin-top: 16px; font-size: 15px; font-weight: 600; }
+  .challenge-box .label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent2); margin-bottom: 6px; font-family: var(--font-mono); }
 
-  /* Challenge box */
-  .challenge-box {
-    background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(0,212,255,0.1));
-    border: 1px solid rgba(124,58,237,0.3);
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin-top: 16px;
-    font-size: 15px;
-    font-weight: 600;
-  }
-  .challenge-box .label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: var(--accent2);
-    margin-bottom: 6px;
-    font-family: var(--font-mono);
-  }
-
-  /* History chart */
-  #chart-canvas-wrap {
-    position: relative;
-    height: 250px;
-  }
-  canvas { border-radius: 8px; }
-
-  /* History table */
+  #chart-canvas-wrap { position: relative; height: 250px; }
   .history-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  .history-table th {
-    text-align: left;
-    padding: 10px 14px;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--muted);
-    border-bottom: 1px solid var(--border);
-  }
-  .history-table td {
-    padding: 12px 14px;
-    border-bottom: 1px solid rgba(30,45,69,0.5);
-    font-family: var(--font-mono);
-    font-size: 13px;
-  }
+  .history-table th { text-align: left; padding: 10px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); border-bottom: 1px solid var(--border); }
+  .history-table td { padding: 12px 14px; border-bottom: 1px solid rgba(30,45,69,0.5); font-family: var(--font-mono); font-size: 13px; }
 
-  /* Feature importance bars */
   .feature-bar-wrap { margin-bottom: 14px; }
-  .feature-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    margin-bottom: 6px;
-  }
+  .feature-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
   .feature-pct { font-family: var(--font-mono); color: var(--accent); }
-  .feature-bar-bg {
-    height: 6px;
-    background: var(--border);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  .feature-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 3px;
-    transition: width 1s ease;
-    width: 0%;
-  }
+  .feature-bar-bg { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .feature-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 3px; transition: width 1s ease; width: 0%; }
 
-  /* Stats row */
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-  }
-  .stat-num {
-    font-family: var(--font-mono);
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--accent);
-  }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; }
+  .stat-num { font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: var(--accent); }
   .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
 
-  /* Breathing animation */
-  .breath-circle {
-    width: 120px; height: 120px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(0,212,255,0.3), rgba(0,212,255,0.05));
-    border: 2px solid var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px;
-    font-weight: 700;
-    margin: 30px auto;
-    transition: transform 0.5s ease;
-  }
+  .breath-circle { width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle, rgba(0,212,255,0.3), rgba(0,212,255,0.05)); border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; margin: 30px auto; transition: transform 0.5s ease; }
   .breath-circle.inhale { transform: scale(1.4); background: radial-gradient(circle, rgba(0,212,255,0.4), rgba(0,212,255,0.1)); }
   .breath-circle.exhale { transform: scale(0.8); }
   .breath-text { text-align: center; font-size: 18px; font-weight: 700; margin-top: 10px; color: var(--accent); min-height: 30px; }
-  .breath-btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 12px 24px;
-    background: rgba(0,212,255,0.1);
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    border-radius: 10px;
-    cursor: pointer;
-    font-family: var(--font-head);
-    font-weight: 700;
-    font-size: 14px;
-    margin: 0 auto;
-    display: block;
-    width: fit-content;
-    transition: all 0.2s;
-  }
+  .breath-btn { display: block; width: fit-content; padding: 12px 24px; background: rgba(0,212,255,0.1); border: 1px solid var(--accent); color: var(--accent); border-radius: 10px; cursor: pointer; font-family: var(--font-head); font-weight: 700; font-size: 14px; margin: 0 auto; transition: all 0.2s; }
   .breath-btn:hover { background: rgba(0,212,255,0.2); }
 
-  /* Pomodoro */
-  .pomo-timer {
-    font-family: var(--font-mono);
-    font-size: 64px;
-    font-weight: 700;
-    text-align: center;
-    color: var(--accent);
-    letter-spacing: 4px;
-    margin: 20px 0;
-    text-shadow: 0 0 30px rgba(0,212,255,0.4);
-  }
+  .pomo-timer { font-family: var(--font-mono); font-size: 64px; font-weight: 700; text-align: center; color: var(--accent); letter-spacing: 4px; margin: 20px 0; text-shadow: 0 0 30px rgba(0,212,255,0.4); }
   .pomo-status { text-align: center; font-size: 16px; color: var(--muted); margin-bottom: 20px; }
   .pomo-controls { display: flex; gap: 12px; justify-content: center; }
-  .pomo-btn {
-    padding: 12px 24px;
-    border-radius: 10px;
-    font-family: var(--font-head);
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-  }
+  .pomo-btn { padding: 12px 24px; border-radius: 10px; font-family: var(--font-head); font-weight: 700; font-size: 14px; cursor: pointer; border: none; transition: all 0.2s; }
   .pomo-start { background: var(--green); color: #000; }
   .pomo-stop { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
   .pomo-sessions { display: flex; gap: 8px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
@@ -464,314 +146,300 @@
   .pomo-dot.done { background: var(--green); }
   .pomo-dot.active { background: var(--accent); box-shadow: 0 0 8px rgba(0,212,255,0.5); }
 
-  /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
   .empty-state { text-align: center; padding: 40px; color: var(--muted); font-size: 14px; }
   .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
 </style>
 </head>
 <body>
-
 <div class="orb orb1"></div>
 <div class="orb orb2"></div>
 
-<header>
-  <div class="logo">
-    <div class="logo-icon">🧠</div>
-    <div class="logo-text">Cogni<span>Fatigue</span></div>
-  </div>
-  <div class="header-badge">ML-POWERED · KNN 86%</div>
-</header>
+<!-- ── Auth Screen ── -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="icon">🧠</div>
+      <h1>Cogni<span>Fatigue</span></h1>
+      <p>ML-Powered Wellness Intelligence</p>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuth('login')">Login</button>
+      <button class="auth-tab" onclick="switchAuth('register')">Sign Up</button>
+    </div>
 
-<div class="nav-tabs">
-  <button class="tab-btn active" onclick="showTab('normal')">⚡ Normal Mode</button>
-  <button class="tab-btn" onclick="showTab('student')">🎓 Student Mode</button>
-  <button class="tab-btn" onclick="showTab('history')">📊 Mood Trend</button>
-  <button class="tab-btn" onclick="showTab('breathing')">🌬️ Breathing</button>
-  <button class="tab-btn" onclick="showTab('pomodoro')">⏱️ Pomodoro</button>
-  <button class="tab-btn" onclick="showTab('features')">🔬 ML Insights</button>
+    <!-- Login Form -->
+    <div class="auth-form active" id="login-form">
+      <div class="auth-error" id="login-error"></div>
+      <div class="auth-input-group">
+        <label>Username</label>
+        <input type="text" id="login-username" placeholder="Enter your username"/>
+      </div>
+      <div class="auth-input-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="Enter your password" onkeydown="if(event.key==='Enter') doLogin()"/>
+      </div>
+      <button class="auth-btn" onclick="doLogin()">Login →</button>
+    </div>
+
+    <!-- Register Form -->
+    <div class="auth-form" id="register-form">
+      <div class="auth-error" id="register-error"></div>
+      <div class="auth-input-group">
+        <label>Full Name</label>
+        <input type="text" id="reg-name" placeholder="Your full name"/>
+      </div>
+      <div class="auth-input-group">
+        <label>Username</label>
+        <input type="text" id="reg-username" placeholder="Choose a username (min 3 chars)"/>
+      </div>
+      <div class="auth-input-group">
+        <label>Password</label>
+        <input type="password" id="reg-password" placeholder="Choose a password (min 6 chars)" onkeydown="if(event.key==='Enter') doRegister()"/>
+      </div>
+      <button class="auth-btn" onclick="doRegister()">Create Account →</button>
+    </div>
+  </div>
 </div>
 
-<main>
+<!-- ── Main App ── -->
+<div id="app-screen">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🧠</div>
+      <div class="logo-text">Cogni<span>Fatigue</span></div>
+    </div>
+    <div class="header-right">
+      <div class="user-badge">👋 Welcome, <strong id="user-name-display"></strong></div>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </header>
 
-  <!-- ── Normal Mode ── -->
-  <div class="panel active" id="panel-normal">
-    <div class="grid-2">
-      <div>
-        <div class="card">
-          <div class="card-title">Lifestyle Inputs</div>
-          <div class="form-group">
-            <label>Sleep Hours <span class="range-val" id="v-sleep">6.0</span></label>
-            <input type="range" min="3" max="9" step="0.5" value="6" oninput="setVal('v-sleep',this.value,'sleep_hours')" id="sleep_hours"/>
-          </div>
-          <div class="form-group">
-            <label>Screen Time (hrs) <span class="range-val" id="v-screen">5.0</span></label>
-            <input type="range" min="1" max="12" step="0.5" value="5" oninput="setVal('v-screen',this.value,'screen_time')" id="screen_time"/>
-          </div>
-          <div class="form-group">
-            <label>Physical Activity (hrs) <span class="range-val" id="v-phys">0.5</span></label>
-            <input type="range" min="0" max="2" step="0.1" value="0.5" oninput="setVal('v-phys',this.value,'physical_activity')" id="physical_activity"/>
-          </div>
-          <div class="form-group">
-            <label>Work/Study Hours <span class="range-val" id="v-work">6.0</span></label>
-            <input type="range" min="2" max="12" step="0.5" value="6" oninput="setVal('v-work',this.value,'work_study_hours')" id="work_study_hours"/>
-          </div>
-          <div class="form-group">
-            <label>Water Intake (litres) <span class="range-val" id="v-water">2.0</span></label>
-            <input type="range" min="1" max="4" step="0.5" value="2" oninput="setVal('v-water',this.value,'water_intake')" id="water_intake"/>
-          </div>
-          <div class="form-group">
-            <label>Diet Quality (1–5) <span class="range-val" id="v-diet">3</span></label>
-            <input type="range" min="1" max="5" step="1" value="3" oninput="setVal('v-diet',this.value,'diet_quality')" id="diet_quality"/>
-          </div>
-          <div class="form-group">
-            <label>Sleep Time (23=11PM, 25=1AM) <span class="range-val" id="v-sltime">23</span></label>
-            <input type="range" min="21" max="27" step="0.5" value="23" oninput="setVal('v-sltime',this.value,'sleep_time')" id="sleep_time"/>
-          </div>
-          <button class="btn" id="predict-btn" onclick="predict()">🧠 Analyze Fatigue</button>
-        </div>
-      </div>
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="showTab('normal',this)">⚡ Normal Mode</button>
+    <button class="tab-btn" onclick="showTab('student',this)">🎓 Student Mode</button>
+    <button class="tab-btn" onclick="showTab('history',this)">📊 Mood Trend</button>
+    <button class="tab-btn" onclick="showTab('breathing',this)">🌬️ Breathing</button>
+    <button class="tab-btn" onclick="showTab('pomodoro',this)">⏱️ Pomodoro</button>
+    <button class="tab-btn" onclick="showTab('features',this)">🔬 ML Insights</button>
+  </div>
 
-      <div>
-        <div id="result-section">
+  <main>
+    <!-- Normal Mode -->
+    <div class="panel active" id="panel-normal">
+      <div class="grid-2">
+        <div>
           <div class="card">
-            <div class="card-title">Fatigue Score</div>
-            <div class="meter-wrap">
-              <div class="meter-ring">
-                <svg viewBox="0 0 160 160" width="160" height="160">
-                  <circle class="ring-bg" cx="80" cy="80" r="68" stroke-dasharray="427" stroke-dashoffset="0"/>
-                  <circle class="ring-fill" id="ring-fill" cx="80" cy="80" r="68" stroke-dasharray="427" stroke-dashoffset="427"/>
-                </svg>
-                <div class="meter-center">
-                  <div class="meter-score" id="score-display">--</div>
-                  <div class="meter-label">/ 100</div>
+            <div class="card-title">Lifestyle Inputs</div>
+            <div class="form-group"><label>Sleep Hours <span class="range-val" id="v-sleep">6.0</span></label><input type="range" min="3" max="9" step="0.5" value="6" oninput="setVal('v-sleep',this.value)" id="sleep_hours"/></div>
+            <div class="form-group"><label>Screen Time (hrs) <span class="range-val" id="v-screen">5.0</span></label><input type="range" min="1" max="12" step="0.5" value="5" oninput="setVal('v-screen',this.value)" id="screen_time"/></div>
+            <div class="form-group"><label>Physical Activity (hrs) <span class="range-val" id="v-phys">0.5</span></label><input type="range" min="0" max="2" step="0.1" value="0.5" oninput="setVal('v-phys',this.value)" id="physical_activity"/></div>
+            <div class="form-group"><label>Work/Study Hours <span class="range-val" id="v-work">6.0</span></label><input type="range" min="2" max="12" step="0.5" value="6" oninput="setVal('v-work',this.value)" id="work_study_hours"/></div>
+            <div class="form-group"><label>Water Intake (litres) <span class="range-val" id="v-water">2.0</span></label><input type="range" min="1" max="4" step="0.5" value="2" oninput="setVal('v-water',this.value)" id="water_intake"/></div>
+            <div class="form-group"><label>Diet Quality (1–5) <span class="range-val" id="v-diet">3</span></label><input type="range" min="1" max="5" step="1" value="3" oninput="setVal('v-diet',this.value)" id="diet_quality"/></div>
+            <div class="form-group"><label>Sleep Time (23=11PM) <span class="range-val" id="v-sltime">23</span></label><input type="range" min="21" max="27" step="0.5" value="23" oninput="setVal('v-sltime',this.value)" id="sleep_time"/></div>
+            <button class="btn" id="predict-btn" onclick="predict()">🧠 Analyze Fatigue</button>
+          </div>
+        </div>
+        <div>
+          <div id="result-section">
+            <div class="card">
+              <div class="card-title">Fatigue Score</div>
+              <div class="meter-wrap">
+                <div class="meter-ring">
+                  <svg viewBox="0 0 160 160" width="160" height="160">
+                    <circle class="ring-bg" cx="80" cy="80" r="68" stroke-dasharray="427" stroke-dashoffset="0"/>
+                    <circle class="ring-fill" id="ring-fill" cx="80" cy="80" r="68" stroke-dasharray="427" stroke-dashoffset="427"/>
+                  </svg>
+                  <div class="meter-center"><div class="meter-score" id="score-display">--</div><div class="meter-label">/ 100</div></div>
                 </div>
+                <div class="level-badge" id="level-badge">--</div>
               </div>
-              <div class="level-badge" id="level-badge">--</div>
+            </div>
+            <div class="card">
+              <div class="card-title">Suggestions</div>
+              <div id="suggestions-list"></div>
+              <div class="challenge-box" id="challenge-box" style="display:none"><div class="label">🎯 Today's Challenge</div><div id="challenge-text"></div></div>
             </div>
           </div>
-          <div class="card">
-            <div class="card-title">Suggestions</div>
-            <div id="suggestions-list"></div>
-            <div class="challenge-box" id="challenge-box" style="display:none">
-              <div class="label">🎯 Today's Challenge</div>
-              <div id="challenge-text"></div>
-            </div>
+          <div class="card" id="empty-result" style="text-align:center;padding:60px 20px;">
+            <div style="font-size:48px;margin-bottom:16px;">🧬</div>
+            <div style="color:var(--muted);font-size:14px;">Fill in your lifestyle details and click<br/><strong style="color:var(--text)">Analyze Fatigue</strong> to get your results</div>
           </div>
-        </div>
-        <div class="card" id="empty-result" style="text-align:center;padding:60px 20px;">
-          <div style="font-size:48px;margin-bottom:16px;">🧬</div>
-          <div style="color:var(--muted);font-size:14px;">Fill in your lifestyle details and click<br/><strong style="color:var(--text)">Analyze Fatigue</strong> to get your results</div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- ── Student Mode ── -->
-  <div class="panel" id="panel-student">
-    <div class="grid-2">
-      <div>
-        <div class="card">
-          <div class="card-title">Academic Context</div>
-          <div class="form-group">
-            <label>Exam Stress (1–10) <span class="range-val" id="sv-stress">5</span></label>
-            <input type="range" min="1" max="10" step="1" value="5" oninput="setVal('sv-stress',this.value)" id="s_exam_stress"/>
-          </div>
-          <div class="form-group">
-            <label>Days Until Exam <span class="range-val" id="sv-days">7</span></label>
-            <input type="range" min="0" max="30" step="1" value="7" oninput="setVal('sv-days',this.value)" id="s_days_to_exam"/>
-          </div>
-          <div class="form-group">
-            <label>Pending Assignments <span class="range-val" id="sv-assign">2</span></label>
-            <input type="range" min="0" max="10" step="1" value="2" oninput="setVal('sv-assign',this.value)" id="s_assignments_pending"/>
-          </div>
-          <div class="form-group">
-            <label>Study Hours Today <span class="range-val" id="sv-study">4.0</span></label>
-            <input type="range" min="0" max="12" step="0.5" value="4" oninput="setVal('sv-study',this.value)" id="s_study_hours"/>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-title">Lifestyle</div>
-          <div class="form-group">
-            <label>Sleep Hours <span class="range-val" id="sv-sleep">6.0</span></label>
-            <input type="range" min="3" max="9" step="0.5" value="6" oninput="setVal('sv-sleep',this.value)" id="s_sleep_hours"/>
-          </div>
-          <div class="form-group">
-            <label>Screen Time (hrs) <span class="range-val" id="sv-screen">4.0</span></label>
-            <input type="range" min="1" max="12" step="0.5" value="4" oninput="setVal('sv-screen',this.value)" id="s_screen_time"/>
-          </div>
-          <div class="form-group">
-            <label>Water Intake (L) <span class="range-val" id="sv-water">2.0</span></label>
-            <input type="range" min="1" max="4" step="0.5" value="2" oninput="setVal('sv-water',this.value)" id="s_water_intake"/>
-          </div>
-          <div class="form-group">
-            <label>Diet Quality (1–5) <span class="range-val" id="sv-diet">3</span></label>
-            <input type="range" min="1" max="5" step="1" value="3" oninput="setVal('sv-diet',this.value)" id="s_diet_quality"/>
-          </div>
-          <div class="form-group">
-            <label>Physical Activity (hrs) <span class="range-val" id="sv-phys">0.5</span></label>
-            <input type="range" min="0" max="2" step="0.1" value="0.5" oninput="setVal('sv-phys',this.value)" id="s_physical_activity"/>
-          </div>
-          <div class="form-group">
-            <label>Sleep Time (23=11PM) <span class="range-val" id="sv-sltime">23</span></label>
-            <input type="range" min="21" max="27" step="0.5" value="23" oninput="setVal('sv-sltime',this.value)" id="s_sleep_time"/>
-          </div>
-          <button class="btn" onclick="analyzeStudent()">🎓 Analyze Student Fatigue</button>
-        </div>
-      </div>
-
-      <div>
-        <div id="student-result">
+    <!-- Student Mode -->
+    <div class="panel" id="panel-student">
+      <div class="grid-2">
+        <div>
           <div class="card">
-            <div class="card-title">Student Fatigue Score</div>
-            <div class="meter-wrap">
-              <div class="meter-ring">
-                <svg viewBox="0 0 160 160" width="160" height="160">
-                  <circle class="ring-bg" cx="80" cy="80" r="68" stroke-dasharray="427" stroke-dashoffset="0"/>
-                  <circle class="ring-fill" id="s-ring-fill" cx="80" cy="80" r="68" stroke-dasharray="427" stroke-dashoffset="427"/>
-                </svg>
-                <div class="meter-center">
-                  <div class="meter-score" id="s-score-display">--</div>
-                  <div class="meter-label">/ 100</div>
+            <div class="card-title">Academic Context</div>
+            <div class="form-group"><label>Exam Stress (1–10) <span class="range-val" id="sv-stress">5</span></label><input type="range" min="1" max="10" step="1" value="5" oninput="setVal('sv-stress',this.value)" id="s_exam_stress"/></div>
+            <div class="form-group"><label>Days Until Exam <span class="range-val" id="sv-days">7</span></label><input type="range" min="0" max="30" step="1" value="7" oninput="setVal('sv-days',this.value)" id="s_days_to_exam"/></div>
+            <div class="form-group"><label>Pending Assignments <span class="range-val" id="sv-assign">2</span></label><input type="range" min="0" max="10" step="1" value="2" oninput="setVal('sv-assign',this.value)" id="s_assignments_pending"/></div>
+            <div class="form-group"><label>Study Hours Today <span class="range-val" id="sv-study">4.0</span></label><input type="range" min="0" max="12" step="0.5" value="4" oninput="setVal('sv-study',this.value)" id="s_study_hours"/></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Lifestyle</div>
+            <div class="form-group"><label>Sleep Hours <span class="range-val" id="sv-sleep">6.0</span></label><input type="range" min="3" max="9" step="0.5" value="6" oninput="setVal('sv-sleep',this.value)" id="s_sleep_hours"/></div>
+            <div class="form-group"><label>Screen Time (hrs) <span class="range-val" id="sv-screen">4.0</span></label><input type="range" min="1" max="12" step="0.5" value="4" oninput="setVal('sv-screen',this.value)" id="s_screen_time"/></div>
+            <div class="form-group"><label>Water Intake (L) <span class="range-val" id="sv-water">2.0</span></label><input type="range" min="1" max="4" step="0.5" value="2" oninput="setVal('sv-water',this.value)" id="s_water_intake"/></div>
+            <div class="form-group"><label>Diet Quality (1–5) <span class="range-val" id="sv-diet">3</span></label><input type="range" min="1" max="5" step="1" value="3" oninput="setVal('sv-diet',this.value)" id="s_diet_quality"/></div>
+            <div class="form-group"><label>Physical Activity (hrs) <span class="range-val" id="sv-phys">0.5</span></label><input type="range" min="0" max="2" step="0.1" value="0.5" oninput="setVal('sv-phys',this.value)" id="s_physical_activity"/></div>
+            <div class="form-group"><label>Sleep Time (23=11PM) <span class="range-val" id="sv-sltime">23</span></label><input type="range" min="21" max="27" step="0.5" value="23" oninput="setVal('sv-sltime',this.value)" id="s_sleep_time"/></div>
+            <button class="btn" onclick="analyzeStudent()">🎓 Analyze Student Fatigue</button>
+          </div>
+        </div>
+        <div>
+          <div id="student-result">
+            <div class="card">
+              <div class="card-title">Student Fatigue Score</div>
+              <div class="meter-wrap">
+                <div class="meter-ring">
+                  <svg viewBox="0 0 160 160" width="160" height="160">
+                    <circle class="ring-bg" cx="80" cy="80" r="68" stroke-dasharray="427" stroke-dashoffset="0"/>
+                    <circle class="ring-fill" id="s-ring-fill" cx="80" cy="80" r="68" stroke-dasharray="427" stroke-dashoffset="427"/>
+                  </svg>
+                  <div class="meter-center"><div class="meter-score" id="s-score-display">--</div><div class="meter-label">/ 100</div></div>
                 </div>
+                <div class="level-badge" id="s-level-badge">--</div>
               </div>
-              <div class="level-badge" id="s-level-badge">--</div>
+            </div>
+            <div class="card">
+              <div class="card-title">Student Tips</div>
+              <div id="student-tips"></div>
+              <div class="challenge-box" id="s-challenge-box" style="display:none"><div class="label">🎯 Student Challenge</div><div id="s-challenge-text"></div></div>
             </div>
           </div>
-          <div class="card">
-            <div class="card-title">Student Tips</div>
-            <div id="student-tips"></div>
-            <div class="challenge-box" id="s-challenge-box" style="display:none">
-              <div class="label">🎯 Student Challenge</div>
-              <div id="s-challenge-text"></div>
-            </div>
+          <div class="card" id="s-empty" style="text-align:center;padding:60px 20px;">
+            <div style="font-size:48px;margin-bottom:16px;">🎓</div>
+            <div style="color:var(--muted);font-size:14px;">Enter your details and analyze your<br/><strong style="color:var(--text)">student fatigue level</strong></div>
           </div>
-        </div>
-        <div class="card" id="s-empty" style="text-align:center;padding:60px 20px;">
-          <div style="font-size:48px;margin-bottom:16px;">🎓</div>
-          <div style="color:var(--muted);font-size:14px;">Enter your details and analyze your<br/><strong style="color:var(--text)">student fatigue level</strong></div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- ── Mood Trend ── -->
-  <div class="panel" id="panel-history">
-    <div class="card" id="history-stats" style="display:none">
-      <div class="grid-3" id="stats-row"></div>
+    <!-- History -->
+    <div class="panel" id="panel-history">
+      <div class="card" id="history-stats" style="display:none"><div class="grid-3" id="stats-row"></div></div>
+      <div class="card"><div class="card-title">Your Personal Fatigue Trend</div><div id="chart-canvas-wrap"><canvas id="trend-chart"></canvas></div></div>
+      <div class="card"><div class="card-title">Your Session History</div><div id="history-table-wrap"></div></div>
     </div>
-    <div class="card">
-      <div class="card-title">Fatigue Trend Over Time</div>
-      <div id="chart-canvas-wrap">
-        <canvas id="trend-chart"></canvas>
+
+    <!-- Breathing -->
+    <div class="panel" id="panel-breathing">
+      <div class="card" style="max-width:500px;margin:0 auto;text-align:center;">
+        <div class="card-title" style="justify-content:center">Guided Box Breathing</div>
+        <p style="color:var(--muted);font-size:14px;margin-bottom:20px;">4 seconds inhale · 4 seconds hold · 6 seconds exhale</p>
+        <div class="breath-circle" id="breath-circle">Ready</div>
+        <div class="breath-text" id="breath-text"></div>
+        <div style="margin:20px 0;font-family:var(--font-mono);font-size:13px;color:var(--muted)">Cycle <span id="breath-cycle">0</span>/3</div>
+        <button class="breath-btn" id="breath-btn" onclick="startBreathing()">▶ Start Exercise</button>
+        <div id="breath-done" style="display:none;margin-top:20px;padding:16px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:12px;color:var(--green);font-weight:700;">✅ Great job! You should feel calmer now.</div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-title">Session History</div>
-      <div id="history-table-wrap"></div>
-    </div>
-  </div>
 
-  <!-- ── Breathing ── -->
-  <div class="panel" id="panel-breathing">
-    <div style="text-align:center; margin: 20px 0;">
-  <p style="color: #a78bfa; font-size: 14px; margin-bottom: 10px;">🎵 Choose your soothing music</p>
-  <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:15px;">
-    <button onclick="playMusic('lofi')" style="padding:8px 16px; border-radius:20px; border:1px solid #a78bfa; background:transparent; color:#a78bfa; cursor:pointer;">🎧 Lo-fi</button>
-    <button onclick="playMusic('nature')" style="padding:8px 16px; border-radius:20px; border:1px solid #a78bfa; background:transparent; color:#a78bfa; cursor:pointer;">🌿 Nature</button>
-    <button onclick="playMusic('piano')" style="padding:8px 16px; border-radius:20px; border:1px solid #a78bfa; background:transparent; color:#a78bfa; cursor:pointer;">🎹 Piano</button>
-    <button onclick="playMusic('meditation')" style="padding:8px 16px; border-radius:20px; border:1px solid #a78bfa; background:transparent; color:#a78bfa; cursor:pointer;">🧘 Meditation</button>
-    <button onclick="stopMusic()" style="padding:8px 16px; border-radius:20px; border:1px solid #ff6b6b; background:transparent; color:#ff6b6b; cursor:pointer;">⏹ Stop</button>
-  </div>
-  <iframe id="musicPlayer" width="0" height="0" frameborder="0" allow="autoplay" style="display:none"></iframe>
+    <!-- Pomodoro -->
+    <div class="panel" id="panel-pomodoro">
+      <div class="card" style="max-width:500px;margin:0 auto;">
+        <div class="card-title">Pomodoro Focus Timer</div>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+          <label style="text-transform:none;font-size:14px;color:var(--text);">Sessions:</label>
+          <select id="pomo-sessions-select" style="width:80px"><option>1</option><option selected>2</option><option>3</option><option>4</option></select>
+        </div>
+        <div class="pomo-timer" id="pomo-display">25:00</div>
+        <div class="pomo-status" id="pomo-status">Ready to focus 🍅</div>
+        <div class="pomo-sessions" id="pomo-dots"></div>
+        <div class="pomo-controls" style="margin-top:24px;">
+          <button class="pomo-btn pomo-start" onclick="startPomo()">▶ Start</button>
+          <button class="pomo-btn pomo-stop" onclick="stopPomo()">⏹ Stop</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ML Insights -->
+    <div class="panel" id="panel-features">
+      <div class="card">
+        <div class="card-title">Random Forest — Feature Importance</div>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:24px;">How much each lifestyle factor contributes to your fatigue prediction</p>
+        <div id="features-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Model Performance</div>
+        <div class="grid-3">
+          <div class="stat-card"><div class="stat-num">86%</div><div class="stat-label">KNN Accuracy</div></div>
+          <div class="stat-card"><div class="stat-num">500</div><div class="stat-label">Training Samples</div></div>
+          <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">ML Models</div></div>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>
-
-<script>
-function playMusic(type) {
-  const tracks = {
-    lofi: 'https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1',
-    nature: 'https://www.youtube.com/embed/eKFTSSKCzWA?autoplay=1',
-    piano: 'https://www.youtube.com/embed/77ZozI0rw7w?autoplay=1',
-    meditation: 'https://www.youtube.com/embed/lFcSrYw-ARY?autoplay=1'
-  };
-  document.getElementById('musicPlayer').src = tracks[type];
-}
-function stopMusic() {
-  document.getElementById('musicPlayer').src = '';
-}
-</script>
-    <div class="card" style="max-width:500px;margin:0 auto;text-align:center;">
-      <div class="card-title" style="justify-content:center">Guided Box Breathing</div>
-      <p style="color:var(--muted);font-size:14px;margin-bottom:20px;">4 seconds inhale · 4 seconds hold · 6 seconds exhale</p>
-      <div class="breath-circle" id="breath-circle">Ready</div>
-      <div class="breath-text" id="breath-text"></div>
-      <div style="margin:20px 0;font-family:var(--font-mono);font-size:13px;color:var(--muted)">
-        Cycle <span id="breath-cycle">0</span>/3
-      </div>
-      <button class="breath-btn" id="breath-btn" onclick="startBreathing()">▶ Start Exercise</button>
-      <div id="breath-done" style="display:none;margin-top:20px;padding:16px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:12px;color:var(--green);font-weight:700;">
-        ✅ Great job! You should feel calmer now.
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Pomodoro ── -->
-  <div class="panel" id="panel-pomodoro">
-    <div class="card" style="max-width:500px;margin:0 auto;">
-      <div class="card-title">Pomodoro Focus Timer</div>
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
-        <label style="text-transform:none;font-size:14px;color:var(--text);">Sessions:</label>
-        <select id="pomo-sessions-select" style="width:80px">
-          <option>1</option><option selected>2</option><option>3</option><option>4</option>
-        </select>
-      </div>
-      <div class="pomo-timer" id="pomo-display">25:00</div>
-      <div class="pomo-status" id="pomo-status">Ready to focus 🍅</div>
-      <div class="pomo-sessions" id="pomo-dots"></div>
-      <div class="pomo-controls" style="margin-top:24px;">
-        <button class="pomo-btn pomo-start" onclick="startPomo()">▶ Start</button>
-        <button class="pomo-btn pomo-stop" onclick="stopPomo()">⏹ Stop</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── ML Insights ── -->
-  <div class="panel" id="panel-features">
-    <div class="card">
-      <div class="card-title">Random Forest — Feature Importance</div>
-      <p style="color:var(--muted);font-size:13px;margin-bottom:24px;">How much each lifestyle factor contributes to your fatigue prediction</p>
-      <div id="features-list"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Model Performance</div>
-      <div class="grid-3">
-        <div class="stat-card"><div class="stat-num">86%</div><div class="stat-label">KNN Accuracy</div></div>
-        <div class="stat-card"><div class="stat-num">500</div><div class="stat-label">Training Samples</div></div>
-        <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">ML Models</div></div>
-      </div>
-    </div>
-  </div>
-
-</main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
+// ── Auth ──
+function switchAuth(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+  document.querySelector(`.auth-tab:nth-child(${tab==='login'?1:2})`).classList.add('active');
+  document.getElementById(tab+'-form').classList.add('active');
+}
+
+async function doLogin() {
+  const username = document.getElementById('login-username').value;
+  const password = document.getElementById('login-password').value;
+  const err = document.getElementById('login-error');
+  err.style.display = 'none';
+  const res = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username, password}) });
+  const r = await res.json();
+  if (r.error) { err.textContent = r.error; err.style.display = 'block'; return; }
+  showApp(r.name);
+}
+
+async function doRegister() {
+  const name = document.getElementById('reg-name').value;
+  const username = document.getElementById('reg-username').value;
+  const password = document.getElementById('reg-password').value;
+  const err = document.getElementById('register-error');
+  err.style.display = 'none';
+  const res = await fetch('/api/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name, username, password}) });
+  const r = await res.json();
+  if (r.error) { err.textContent = r.error; err.style.display = 'block'; return; }
+  showApp(r.name);
+}
+
+async function doLogout() {
+  await fetch('/api/logout', { method:'POST' });
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'flex';
+}
+
+function showApp(name) {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+  document.getElementById('user-name-display').textContent = name;
+}
+
+// Check if already logged in
+fetch('/api/me').then(r=>r.json()).then(d => { if(d.logged_in) showApp(d.name); });
+
 // ── Tab switching ──
-function showTab(name) {
+function showTab(name, btn) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('panel-'+name).classList.add('active');
-  event.target.classList.add('active');
+  btn.classList.add('active');
   if (name === 'history') loadHistory();
   if (name === 'features') loadFeatures();
 }
 
-// ── Range value display ──
 function setVal(id, val) {
-  document.getElementById(id).textContent = parseFloat(val).toFixed(val % 1 === 0 && !id.includes('phys') ? 0 : 1);
+  document.getElementById(id).textContent = parseFloat(val).toFixed(1);
 }
 
 // ── Predict ──
@@ -790,35 +458,24 @@ async function predict() {
   const res = await fetch('/api/predict', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
   const r = await res.json();
   btn.classList.remove('loading'); btn.textContent = '🧠 Analyze Fatigue';
-
   document.getElementById('result-section').style.display = 'block';
   document.getElementById('empty-result').style.display = 'none';
-
-  // Meter
   const pct = r.score / 100;
   const offset = 427 - (427 * pct);
   const ring = document.getElementById('ring-fill');
   const color = r.level === 'Low' ? '#22c55e' : r.level === 'Medium' ? '#f59e0b' : '#ef4444';
-  ring.style.stroke = color;
-  ring.style.strokeDashoffset = offset;
+  ring.style.stroke = color; ring.style.strokeDashoffset = offset;
   document.getElementById('score-display').textContent = r.score;
   document.getElementById('score-display').style.color = color;
   const badge = document.getElementById('level-badge');
-  badge.textContent = r.level;
-  badge.className = 'level-badge level-' + r.level;
-
-  // Suggestions
+  badge.textContent = r.level; badge.className = 'level-badge level-' + r.level;
   const list = document.getElementById('suggestions-list');
   list.innerHTML = '';
   r.suggestions.forEach((s, i) => {
     const el = document.createElement('div');
-    el.className = 'suggestion-item';
-    el.style.animationDelay = (i * 0.1) + 's';
-    el.textContent = s;
+    el.className = 'suggestion-item'; el.style.animationDelay = (i * 0.1) + 's'; el.textContent = s;
     list.appendChild(el);
   });
-
-  // Challenge
   document.getElementById('challenge-text').textContent = r.challenge;
   document.getElementById('challenge-box').style.display = 'block';
 }
@@ -839,29 +496,20 @@ async function analyzeStudent() {
   };
   const res = await fetch('/api/student', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
   const r = await res.json();
-
   document.getElementById('student-result').style.display = 'block';
   document.getElementById('s-empty').style.display = 'none';
-
-  const pct = r.score / 100;
-  const offset = 427 - (427 * pct);
-  const ring = document.getElementById('s-ring-fill');
   const color = r.level === 'Low' ? '#22c55e' : r.level === 'Medium' ? '#f59e0b' : '#ef4444';
-  ring.style.stroke = color;
-  ring.style.strokeDashoffset = offset;
+  const ring = document.getElementById('s-ring-fill');
+  ring.style.stroke = color; ring.style.strokeDashoffset = 427 - (427 * r.score / 100);
   document.getElementById('s-score-display').textContent = r.score;
   document.getElementById('s-score-display').style.color = color;
   const badge = document.getElementById('s-level-badge');
-  badge.textContent = r.level;
-  badge.className = 'level-badge level-' + r.level;
-
+  badge.textContent = r.level; badge.className = 'level-badge level-' + r.level;
   const tips = document.getElementById('student-tips');
   tips.innerHTML = '';
   (r.tips.length ? r.tips : ['✅ You are managing well! Keep it up.']).forEach((s, i) => {
     const el = document.createElement('div');
-    el.className = 'suggestion-item';
-    el.style.animationDelay = (i * 0.1) + 's';
-    el.textContent = s;
+    el.className = 'suggestion-item'; el.style.animationDelay = (i * 0.1) + 's'; el.textContent = s;
     tips.appendChild(el);
   });
   document.getElementById('s-challenge-text').textContent = r.challenge;
@@ -873,13 +521,10 @@ let chartInstance = null;
 async function loadHistory() {
   const res = await fetch('/api/history');
   const data = await res.json();
-
   if (!data.length) {
     document.getElementById('history-table-wrap').innerHTML = '<div class="empty-state"><div class="icon">📭</div>No sessions yet. Run a fatigue analysis first!</div>';
     return;
   }
-
-  // Stats
   const scores = data.map(d => d.score);
   const avg = (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1);
   const highs = data.filter(d=>d.level==='High').length;
@@ -887,63 +532,19 @@ async function loadHistory() {
   document.getElementById('stats-row').innerHTML = `
     <div class="stat-card"><div class="stat-num">${data.length}</div><div class="stat-label">Total Sessions</div></div>
     <div class="stat-card"><div class="stat-num">${avg}</div><div class="stat-label">Avg Fatigue Score</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--red)">${highs}</div><div class="stat-label">High Fatigue Days</div></div>
-  `;
-
-  // Chart
+    <div class="stat-card"><div class="stat-num" style="color:var(--red)">${highs}</div><div class="stat-label">High Fatigue Days</div></div>`;
   const labels = data.map(d => d.date.slice(5,16));
   const vals = data.map(d => d.score);
   const colors = vals.map(v => v < 35 ? '#22c55e' : v < 65 ? '#f59e0b' : '#ef4444');
-
   if (chartInstance) chartInstance.destroy();
   const ctx = document.getElementById('trend-chart').getContext('2d');
   chartInstance = new Chart(ctx, {
     type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Fatigue Score',
-        data: vals,
-        borderColor: '#00d4ff',
-        backgroundColor: 'rgba(0,212,255,0.05)',
-        pointBackgroundColor: colors,
-        pointBorderColor: colors,
-        pointRadius: 6,
-        tension: 0.3,
-        fill: true,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: {
-          min: 0, max: 100,
-          grid: { color: 'rgba(30,45,69,0.5)' },
-          ticks: { color: '#64748b', font: { family: 'Space Mono' } }
-        },
-        x: {
-          grid: { color: 'rgba(30,45,69,0.5)' },
-          ticks: { color: '#64748b', font: { family: 'Space Mono', size: 11 }, maxRotation: 45 }
-        }
-      }
-    }
+    data: { labels, datasets: [{ label: 'Fatigue Score', data: vals, borderColor: '#00d4ff', backgroundColor: 'rgba(0,212,255,0.05)', pointBackgroundColor: colors, pointBorderColor: colors, pointRadius: 6, tension: 0.3, fill: true }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100, grid: { color: 'rgba(30,45,69,0.5)' }, ticks: { color: '#64748b', font: { family: 'Space Mono' } } }, x: { grid: { color: 'rgba(30,45,69,0.5)' }, ticks: { color: '#64748b', font: { family: 'Space Mono', size: 11 }, maxRotation: 45 } } } }
   });
-
-  // Table
-  let rows = data.slice().reverse().map(d => `
-    <tr>
-      <td>${d.date}</td>
-      <td>${d.score}</td>
-      <td><span class="level-badge level-${d.level}" style="font-size:11px;padding:3px 10px">${d.level}</span></td>
-      <td style="color:var(--muted)">${d.mode || 'normal'}</td>
-    </tr>`).join('');
-  document.getElementById('history-table-wrap').innerHTML = `
-    <table class="history-table">
-      <thead><tr><th>Date</th><th>Score</th><th>Level</th><th>Mode</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+  let rows = data.slice().reverse().map(d => `<tr><td>${d.date}</td><td>${d.score}</td><td><span class="level-badge level-${d.level}" style="font-size:11px;padding:3px 10px">${d.level}</span></td><td style="color:var(--muted)">${d.mode || 'normal'}</td></tr>`).join('');
+  document.getElementById('history-table-wrap').innerHTML = `<table class="history-table"><thead><tr><th>Date</th><th>Score</th><th>Level</th><th>Mode</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 // ── Features ──
@@ -954,16 +555,7 @@ async function loadFeatures() {
   const wrap = document.getElementById('features-list');
   wrap.innerHTML = '';
   sorted.forEach(([name, pct]) => {
-    wrap.innerHTML += `
-      <div class="feature-bar-wrap">
-        <div class="feature-label">
-          <span>${name.replace(/_/g,' ')}</span>
-          <span class="feature-pct">${pct}%</span>
-        </div>
-        <div class="feature-bar-bg">
-          <div class="feature-bar-fill" style="width:${pct}%"></div>
-        </div>
-      </div>`;
+    wrap.innerHTML += `<div class="feature-bar-wrap"><div class="feature-label"><span>${name.replace(/_/g,' ')}</span><span class="feature-pct">${pct}%</span></div><div class="feature-bar-bg"><div class="feature-bar-fill" style="width:${pct}%"></div></div></div>`;
   });
 }
 
@@ -976,26 +568,17 @@ async function startBreathing() {
   document.getElementById('breath-done').style.display = 'none';
   const circle = document.getElementById('breath-circle');
   const text = document.getElementById('breath-text');
-
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const countdown = async (label, sec, cls) => {
-    for (let i = sec; i >= 1; i--) {
-      circle.className = 'breath-circle ' + cls;
-      circle.textContent = i;
-      text.textContent = label;
-      await sleep(1000);
-    }
+    for (let i = sec; i >= 1; i--) { circle.className = 'breath-circle ' + cls; circle.textContent = i; text.textContent = label; await sleep(1000); }
   };
-
   for (let c = 1; c <= 3; c++) {
     document.getElementById('breath-cycle').textContent = c;
     await countdown('Breathe IN 👃', 4, 'inhale');
     await countdown('Hold...', 4, 'inhale');
     await countdown('Breathe OUT 😮', 6, 'exhale');
   }
-  circle.className = 'breath-circle';
-  circle.textContent = '✅';
-  text.textContent = '';
+  circle.className = 'breath-circle'; circle.textContent = '✅'; text.textContent = '';
   document.getElementById('breath-done').style.display = 'block';
   document.getElementById('breath-btn').style.display = 'block';
   document.getElementById('breath-btn').textContent = '▶ Repeat';
@@ -1005,13 +588,8 @@ async function startBreathing() {
 // ── Pomodoro ──
 let pomoTimer = null, pomoSecs = 25*60, pomoSession = 1, pomoTotal = 2, pomoBreak = false;
 function renderDots() {
-  const wrap = document.getElementById('pomo-dots');
-  wrap.innerHTML = '';
-  for (let i = 1; i <= pomoTotal; i++) {
-    const d = document.createElement('div');
-    d.className = 'pomo-dot' + (i < pomoSession ? ' done' : i === pomoSession ? ' active' : '');
-    wrap.appendChild(d);
-  }
+  const wrap = document.getElementById('pomo-dots'); wrap.innerHTML = '';
+  for (let i = 1; i <= pomoTotal; i++) { const d = document.createElement('div'); d.className = 'pomo-dot' + (i < pomoSession ? ' done' : i === pomoSession ? ' active' : ''); wrap.appendChild(d); }
 }
 function formatTime(s) { return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
 function startPomo() {
@@ -1025,34 +603,13 @@ function startPomo() {
     document.getElementById('pomo-display').textContent = formatTime(pomoSecs);
     if (pomoSecs <= 0) {
       if (!pomoBreak) {
-        if (pomoSession >= pomoTotal) {
-          clearInterval(pomoTimer); pomoTimer = null;
-          document.getElementById('pomo-status').textContent = '🎉 All sessions complete! Amazing work!';
-          document.getElementById('pomo-display').textContent = '00:00';
-          renderDots();
-          return;
-        }
-        pomoBreak = true; pomoSecs = 5*60;
-        document.getElementById('pomo-status').textContent = '☕ Break time! Relax for 5 minutes.';
-      } else {
-        pomoSession++; pomoBreak = false; pomoSecs = 25*60;
-        renderDots();
-        document.getElementById('pomo-status').textContent = `Session ${pomoSession}/${pomoTotal} — Back to focus! 🍅`;
-      }
+        if (pomoSession >= pomoTotal) { clearInterval(pomoTimer); pomoTimer = null; document.getElementById('pomo-status').textContent = '🎉 All sessions complete!'; document.getElementById('pomo-display').textContent = '00:00'; renderDots(); return; }
+        pomoBreak = true; pomoSecs = 5*60; document.getElementById('pomo-status').textContent = '☕ Break time! Relax for 5 minutes.';
+      } else { pomoSession++; pomoBreak = false; pomoSecs = 25*60; renderDots(); document.getElementById('pomo-status').textContent = `Session ${pomoSession}/${pomoTotal} — Back to focus! 🍅`; }
     }
   }, 1000);
 }
-function stopPomo() {
-  clearInterval(pomoTimer); pomoTimer = null;
-  pomoSecs = 25*60; pomoSession = 1; pomoBreak = false;
-  document.getElementById('pomo-display').textContent = '25:00';
-  document.getElementById('pomo-status').textContent = 'Ready to focus 🍅';
-  document.getElementById('pomo-dots').innerHTML = '';
-}
+function stopPomo() { clearInterval(pomoTimer); pomoTimer = null; pomoSecs = 25*60; pomoSession = 1; pomoBreak = false; document.getElementById('pomo-display').textContent = '25:00'; document.getElementById('pomo-status').textContent = 'Ready to focus 🍅'; document.getElementById('pomo-dots').innerHTML = ''; }
 </script>
 </body>
 </html>
-
-<div style="text-align: center; padding: 20px; color: #888; font-size: 13px; font-family: sans-serif;">
-  Made with ❤️ by <strong style="color: #fff;">Muskan Jha</strong>
-</div>

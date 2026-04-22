@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 import pandas as pd
 import numpy as np
 import json
 import os
 import random
+import hashlib
 from datetime import datetime
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -11,8 +12,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 
 app = Flask(__name__)
+app.secret_key = "cogni_fatigue_secret_2026"
 
-# ─── Train Models on startup ───
 np.random.seed(42)
 n = 500
 data = {
@@ -56,22 +57,44 @@ for name, model in models.items():
 rf_model = models["Random Forest"]
 feature_importances = dict(zip(X.columns, (rf_model.feature_importances_ * 100).round(1)))
 
-# ─── Memory ───
+USERS_FILE = "users.json"
 MEMORY_FILE = "session_memory.json"
 
-def load_memory():
+def load_users():
+    if os.path.exists(USERS_FILE):
+        with open(USERS_FILE, "r") as f:
+            return json.load(f)
+    return {}
+
+def save_users(users):
+    with open(USERS_FILE, "w") as f:
+        json.dump(users, f, indent=2)
+
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def load_user_memory(username):
     if os.path.exists(MEMORY_FILE):
         with open(MEMORY_FILE, "r") as f:
-            return json.load(f)
+            all_memory = json.load(f)
+        if isinstance(all_memory, list):
+            return []
+        return all_memory.get(username, [])
     return []
 
-def save_memory(entry):
-    memory = load_memory()
-    memory.append(entry)
+def save_user_memory(username, entry):
+    all_memory = {}
+    if os.path.exists(MEMORY_FILE):
+        with open(MEMORY_FILE, "r") as f:
+            data = json.load(f)
+        if isinstance(data, dict):
+            all_memory = data
+    if username not in all_memory:
+        all_memory[username] = []
+    all_memory[username].append(entry)
     with open(MEMORY_FILE, "w") as f:
-        json.dump(memory, f, indent=2)
+        json.dump(all_memory, f, indent=2)
 
-# ─── Suggestions ───
 def get_suggestions(level, data):
     suggestions = []
     if level == "High":
@@ -102,12 +125,65 @@ challenges = {
     "Low":    ["Maintain your sleep schedule ⏰", "Do 20 mins of exercise 🏃", "Read for 30 minutes 📖"]
 }
 
-# ─── Routes ───
+def login_required(f):
+    from functools import wraps
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "username" not in session:
+            return jsonify({"error": "Not logged in"}), 401
+        return f(*args, **kwargs)
+    return decorated
+
 @app.route("/")
 def index():
     return render_template("index.html")
 
+@app.route("/api/register", methods=["POST"])
+def register():
+    d = request.json
+    username = d.get("username", "").strip().lower()
+    password = d.get("password", "")
+    name = d.get("name", "").strip()
+    if not username or not password or not name:
+        return jsonify({"error": "All fields are required"}), 400
+    if len(username) < 3:
+        return jsonify({"error": "Username must be at least 3 characters"}), 400
+    if len(password) < 6:
+        return jsonify({"error": "Password must be at least 6 characters"}), 400
+    users = load_users()
+    if username in users:
+        return jsonify({"error": "Username already exists"}), 400
+    users[username] = {"name": name, "password": hash_password(password), "created": datetime.now().strftime("%Y-%m-%d %H:%M")}
+    save_users(users)
+    session["username"] = username
+    session["name"] = name
+    return jsonify({"success": True, "name": name})
+
+@app.route("/api/login", methods=["POST"])
+def login():
+    d = request.json
+    username = d.get("username", "").strip().lower()
+    password = d.get("password", "")
+    users = load_users()
+    if username not in users or users[username]["password"] != hash_password(password):
+        return jsonify({"error": "Invalid username or password"}), 401
+    session["username"] = username
+    session["name"] = users[username]["name"]
+    return jsonify({"success": True, "name": users[username]["name"]})
+
+@app.route("/api/logout", methods=["POST"])
+def logout():
+    session.clear()
+    return jsonify({"success": True})
+
+@app.route("/api/me")
+def me():
+    if "username" in session:
+        return jsonify({"logged_in": True, "name": session["name"], "username": session["username"]})
+    return jsonify({"logged_in": False})
+
 @app.route("/api/predict", methods=["POST"])
+@login_required
 def predict():
     d = request.json
     user_data = {
@@ -131,21 +207,11 @@ def predict():
         (user_data["sleep_time"] - 23) * 2
     )
     score = max(0, min(100, score))
-
-    save_memory({
-        "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "level": predicted_level,
-        "score": round(score, 1)
-    })
-
-    return jsonify({
-        "level": predicted_level,
-        "score": round(score, 1),
-        "suggestions": get_suggestions(predicted_level, user_data),
-        "challenge": random.choice(challenges[predicted_level])
-    })
+    save_user_memory(session["username"], {"date": datetime.now().strftime("%Y-%m-%d %H:%M"), "level": predicted_level, "score": round(score, 1)})
+    return jsonify({"level": predicted_level, "score": round(score, 1), "suggestions": get_suggestions(predicted_level, user_data), "challenge": random.choice(challenges[predicted_level])})
 
 @app.route("/api/student", methods=["POST"])
+@login_required
 def student():
     d = request.json
     exam_stress = int(d["exam_stress"])
@@ -158,7 +224,6 @@ def student():
     physical_activity = float(d["physical_activity"])
     sleep_time = float(d["sleep_time"])
     study_hours = float(d["study_hours"])
-
     student_score = (
         exam_stress * 3 +
         ((10 - days_to_exam) * 1.5 if days_to_exam <= 10 else 0) +
@@ -171,12 +236,8 @@ def student():
         (sleep_time - 23) * 2
     )
     student_score = max(0, min(100, student_score))
-
-    user_data = {"sleep_hours": sleep_hours, "screen_time": screen_time,
-                 "physical_activity": physical_activity, "work_study_hours": study_hours,
-                 "water_intake": water_intake, "diet_quality": diet_quality, "sleep_time": sleep_time}
+    user_data = {"sleep_hours": sleep_hours, "screen_time": screen_time, "physical_activity": physical_activity, "work_study_hours": study_hours, "water_intake": water_intake, "diet_quality": diet_quality, "sleep_time": sleep_time}
     predicted_level = models["KNN"].predict(pd.DataFrame([user_data]))[0]
-
     tips = []
     if exam_stress >= 7:
         tips.append("😰 High exam stress! Try the Pomodoro technique.")
@@ -189,33 +250,14 @@ def student():
         tips.append("😴 Don't sacrifice sleep before exams — memory needs rest!")
     if student_score > 60:
         tips.append("🧘 Take a 10-min break RIGHT NOW before continuing.")
-
-    student_challenges = [
-        "Complete 1 pending assignment today 📝",
-        "Study using Pomodoro: 25min on, 5min off ⏱️",
-        "No phone for first 2 hours of study 📵",
-        "Sleep before midnight tonight 🌙",
-        "Drink water every hour during study 💧"
-    ]
-
-    save_memory({
-        "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "level": predicted_level,
-        "score": round(student_score, 1),
-        "mode": "student"
-    })
-
-    return jsonify({
-        "level": predicted_level,
-        "score": round(student_score, 1),
-        "tips": tips,
-        "challenge": random.choice(student_challenges)
-    })
+    student_challenges = ["Complete 1 pending assignment today 📝", "Study using Pomodoro: 25min on, 5min off ⏱️", "No phone for first 2 hours of study 📵", "Sleep before midnight tonight 🌙", "Drink water every hour during study 💧"]
+    save_user_memory(session["username"], {"date": datetime.now().strftime("%Y-%m-%d %H:%M"), "level": predicted_level, "score": round(student_score, 1), "mode": "student"})
+    return jsonify({"level": predicted_level, "score": round(student_score, 1), "tips": tips, "challenge": random.choice(student_challenges)})
 
 @app.route("/api/history")
+@login_required
 def history():
-    memory = load_memory()
-    return jsonify(memory)
+    return jsonify(load_user_memory(session["username"]))
 
 @app.route("/api/features")
 def features():
