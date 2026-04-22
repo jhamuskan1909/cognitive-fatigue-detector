@@ -675,7 +675,19 @@ async function sendMessage() {
 
   messages.innerHTML += `<div style="background:linear-gradient(135deg,#a78bfa,#ec4899);padding:10px 14px;border-radius:12px;color:white;font-size:13px;max-width:85%;align-self:flex-end;">${text}</div>`;
   input.value = '';
-  messages.innerHTML += `<div id="typing" style="background:#2d2d4e;padding:10px 14px;border
+  messages.innerHTML += `<div id="typing" style="background:#2d2d4e;padding:10px 14px;border-radius:12px;color:#a78bfa;font-size:13px;">Muskmoon is typing... 🌙</div>`;
+  messages.scrollTop = messages.scrollHeight;
+
+  const res = await fetch('/api/chat', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({message: text})
+  });
+  const data = await res.json();
+  document.getElementById('typing').remove();
+  messages.innerHTML += `<div style="background:#2d2d4e;padding:10px 14px;border-radius:12px;color:#e2e8f0;font-size:13px;max-width:85%;">${data.response}</div>`;
+  messages.scrollTop = messages.scrollHeight;
+}
 </script>
 
 <div style="text-align:center;padding:20px;color:#888;font-size:13px;font-family:sans-serif;">
