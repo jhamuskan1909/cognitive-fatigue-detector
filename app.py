@@ -1,4 +1,3 @@
-import google.generativeai as genai
 
 from flask import Flask, render_template, request, jsonify, session
 import pandas as pd
@@ -20,11 +19,18 @@ app.secret_key = "cogni_fatigue_secret_2026"
 def chat():
     data = request.json
     user_message = data.get('message', '')
-    genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-    model = genai.GenerativeModel('gemini-1.5-flash')
-    prompt = f"You are Muskmoon, a warm empathetic AI companion. Adapt your tone to what the user needs. Never judge. Always support. Keep responses warm and concise. User says: {user_message}"
-    response = model.generate_content(prompt)
-    return jsonify({'response': response.text})
+    import requests as req
+    api_key = os.environ.get("GEMINI_API_KEY")
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+    payload = {
+        "contents": [{
+            "parts": [{"text": f"You are Muskmoon, a warm empathetic AI companion. Never judge. Always support. User says: {user_message}"}]
+        }]
+    }
+    response = req.post(url, json=payload)
+    result = response.json()
+    reply = result['candidates'][0]['content']['parts'][0]['text']
+    return jsonify({'response': reply})
 
 np.random.seed(42)
 n = 500
