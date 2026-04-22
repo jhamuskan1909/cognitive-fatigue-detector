@@ -16,6 +16,7 @@ from sklearn.tree import DecisionTreeClassifier
 app = Flask(__name__)
 app.secret_key = "cogni_fatigue_secret_2026"
 
+@app.route('/api/chat', methods=['POST'])
 def chat():
     data = request.json
     user_message = data.get('message', '')
@@ -23,7 +24,7 @@ def chat():
     model = genai.GenerativeModel('gemini-1.5-flash')
     response = model.generate_content(
         f"""You are Muskmoon 🌙, a warm empathetic AI companion.
-        Adapt your tone to what the user needs — gentle, supportive, fun or wise.
+        Adapt your tone to what the user needs.
         Never judge. Always support. Keep responses warm and concise.
         User says: {user_message}"""
     )
