@@ -1,4 +1,4 @@
-from google import genai
+import google.generativeai as genai
 
 from flask import Flask, render_template, request, jsonify, session
 import pandas as pd
@@ -19,11 +19,11 @@ app.secret_key = "cogni_fatigue_secret_2026"
 def chat():
     data = request.json
     user_message = data.get('message', '')
-    client = genai.Client(api_key="YOUR_NEW_KEY_HERE")
-    response = client.models.generate_content(
-        model='gemini-2.0-flash',
-        contents=f"""You are Muskmoon 🌙, a warm empathetic AI companion.
-        Adapt your tone to what the user needs.
+    genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    response = model.generate_content(
+        f"""You are Muskmoon 🌙, a warm empathetic AI companion.
+        Adapt your tone to what the user needs — gentle, supportive, fun or wise.
         Never judge. Always support. Keep responses warm and concise.
         User says: {user_message}"""
     )
