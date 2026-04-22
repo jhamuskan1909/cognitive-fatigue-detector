@@ -332,6 +332,32 @@
 
     <!-- Breathing -->
     <div class="panel" id="panel-breathing">
+      <div style="text-align:center; margin: 20px 0;">
+  <p style="color: #a78bfa; font-size: 14px; margin-bottom: 10px;">🎵 Choose your soothing music</p>
+  <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:15px;">
+    <button onclick="playMusic('lofi')" style="padding:8px 16px; border-radius:20px; border:1px solid #a78bfa; background:transparent; color:#a78bfa; cursor:pointer;">🎧 Lo-fi</button>
+    <button onclick="playMusic('nature')" style="padding:8px 16px; border-radius:20px; border:1px solid #a78bfa; background:transparent; color:#a78bfa; cursor:pointer;">🌿 Nature</button>
+    <button onclick="playMusic('piano')" style="padding:8px 16px; border-radius:20px; border:1px solid #a78bfa; background:transparent; color:#a78bfa; cursor:pointer;">🎹 Piano</button>
+    <button onclick="playMusic('meditation')" style="padding:8px 16px; border-radius:20px; border:1px solid #a78bfa; background:transparent; color:#a78bfa; cursor:pointer;">🧘 Meditation</button>
+    <button onclick="stopMusic()" style="padding:8px 16px; border-radius:20px; border:1px solid #ff6b6b; background:transparent; color:#ff6b6b; cursor:pointer;">⏹ Stop</button>
+  </div>
+  <iframe id="musicPlayer" width="0" height="0" frameborder="0" allow="autoplay" style="display:none"></iframe>
+</div>
+
+<script>
+function playMusic(type) {
+  const tracks = {
+    lofi: 'https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1',
+    nature: 'https://www.youtube.com/embed/eKFTSSKCzWA?autoplay=1',
+    piano: 'https://www.youtube.com/embed/77ZozI0rw7w?autoplay=1',
+    meditation: 'https://www.youtube.com/embed/lFcSrYw-ARY?autoplay=1'
+  };
+  document.getElementById('musicPlayer').src = tracks[type];
+}
+function stopMusic() {
+  document.getElementById('musicPlayer').src = '';
+}
+</script>
       <div class="card" style="max-width:500px;margin:0 auto;text-align:center;">
         <div class="card-title" style="justify-content:center">Guided Box Breathing</div>
         <p style="color:var(--muted);font-size:14px;margin-bottom:20px;">4 seconds inhale · 4 seconds hold · 6 seconds exhale</p>
