@@ -21,7 +21,7 @@ def chat():
     user_message = data.get('message', '')
     import requests as req
     api_key = os.environ.get("GEMINI_API_KEY")
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
     payload = {
         "contents": [{
             "parts": [{"text": f"You are Muskmoon, a warm empathetic AI companion. Never judge. Always support. User says: {user_message}"}]
