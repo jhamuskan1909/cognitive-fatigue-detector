@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, jsonify, session
 import pandas as pd
 import numpy as np
@@ -11,30 +10,20 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
+from pymongo import MongoClient
+from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = "cogni_fatigue_secret_2026"
 
-@app.route('/api/chat', methods=['POST'])
-def chat():
-    data = request.json
-    user_message = data.get('message', '')
-    import requests as req
-    api_key = os.environ.get("GEMINI_API_KEY")
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
-    payload = {
-        "contents": [{
-            "parts": [{"text": f"You are Muskmoon, a warm empathetic AI companion. Never judge. Always support. User says: {user_message}"}]
-        }]
-    }
-    response = req.post(url, json=payload)
-    result = response.json()
-    try:
-        reply = result['candidates'][0]['content']['parts'][0]['text']
-    except:
-        reply = str(result)
-    return jsonify({'response': reply})
+# MongoDB Setup
+MONGO_URI = os.environ.get("MONGO_URI")
+client = MongoClient(MONGO_URI)
+db = client["cogni_fatigue"]
+users_col = db["users"]
+sessions_col = db["sessions"]
 
+# Synthetic Data & ML Models
 np.random.seed(42)
 n = 500
 data = {
@@ -78,43 +67,17 @@ for name, model in models.items():
 rf_model = models["Random Forest"]
 feature_importances = dict(zip(X.columns, (rf_model.feature_importances_ * 100).round(1)))
 
-USERS_FILE = "users.json"
-MEMORY_FILE = "session_memory.json"
-
-def load_users():
-    if os.path.exists(USERS_FILE):
-        with open(USERS_FILE, "r") as f:
-            return json.load(f)
-    return {}
-
-def save_users(users):
-    with open(USERS_FILE, "w") as f:
-        json.dump(users, f, indent=2)
-
+# Helper Functions
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 def load_user_memory(username):
-    if os.path.exists(MEMORY_FILE):
-        with open(MEMORY_FILE, "r") as f:
-            all_memory = json.load(f)
-        if isinstance(all_memory, list):
-            return []
-        return all_memory.get(username, [])
-    return []
+    records = list(sessions_col.find({"username": username}, {"_id": 0}))
+    return records
 
 def save_user_memory(username, entry):
-    all_memory = {}
-    if os.path.exists(MEMORY_FILE):
-        with open(MEMORY_FILE, "r") as f:
-            data = json.load(f)
-        if isinstance(data, dict):
-            all_memory = data
-    if username not in all_memory:
-        all_memory[username] = []
-    all_memory[username].append(entry)
-    with open(MEMORY_FILE, "w") as f:
-        json.dump(all_memory, f, indent=2)
+    entry["username"] = username
+    sessions_col.insert_one(entry)
 
 def get_suggestions(level, data):
     suggestions = []
@@ -147,7 +110,6 @@ challenges = {
 }
 
 def login_required(f):
-    from functools import wraps
     @wraps(f)
     def decorated(*args, **kwargs):
         if "username" not in session:
@@ -155,6 +117,7 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
+# Routes
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -171,11 +134,14 @@ def register():
         return jsonify({"error": "Username must be at least 3 characters"}), 400
     if len(password) < 6:
         return jsonify({"error": "Password must be at least 6 characters"}), 400
-    users = load_users()
-    if username in users:
+    if users_col.find_one({"username": username}):
         return jsonify({"error": "Username already exists"}), 400
-    users[username] = {"name": name, "password": hash_password(password), "created": datetime.now().strftime("%Y-%m-%d %H:%M")}
-    save_users(users)
+    users_col.insert_one({
+        "username": username,
+        "name": name,
+        "password": hash_password(password),
+        "created": datetime.now().strftime("%Y-%m-%d %H:%M")
+    })
     session["username"] = username
     session["name"] = name
     return jsonify({"success": True, "name": name})
@@ -185,12 +151,12 @@ def login():
     d = request.json
     username = d.get("username", "").strip().lower()
     password = d.get("password", "")
-    users = load_users()
-    if username not in users or users[username]["password"] != hash_password(password):
+    user = users_col.find_one({"username": username})
+    if not user or user["password"] != hash_password(password):
         return jsonify({"error": "Invalid username or password"}), 401
     session["username"] = username
-    session["name"] = users[username]["name"]
-    return jsonify({"success": True, "name": users[username]["name"]})
+    session["name"] = user["name"]
+    return jsonify({"success": True, "name": user["name"]})
 
 @app.route("/api/logout", methods=["POST"])
 def logout():
@@ -228,8 +194,17 @@ def predict():
         (user_data["sleep_time"] - 23) * 2
     )
     score = max(0, min(100, score))
-    save_user_memory(session["username"], {"date": datetime.now().strftime("%Y-%m-%d %H:%M"), "level": predicted_level, "score": round(score, 1)})
-    return jsonify({"level": predicted_level, "score": round(score, 1), "suggestions": get_suggestions(predicted_level, user_data), "challenge": random.choice(challenges[predicted_level])})
+    save_user_memory(session["username"], {
+        "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "level": predicted_level,
+        "score": round(score, 1)
+    })
+    return jsonify({
+        "level": predicted_level,
+        "score": round(score, 1),
+        "suggestions": get_suggestions(predicted_level, user_data),
+        "challenge": random.choice(challenges[predicted_level])
+    })
 
 @app.route("/api/student", methods=["POST"])
 @login_required
@@ -257,7 +232,11 @@ def student():
         (sleep_time - 23) * 2
     )
     student_score = max(0, min(100, student_score))
-    user_data = {"sleep_hours": sleep_hours, "screen_time": screen_time, "physical_activity": physical_activity, "work_study_hours": study_hours, "water_intake": water_intake, "diet_quality": diet_quality, "sleep_time": sleep_time}
+    user_data = {
+        "sleep_hours": sleep_hours, "screen_time": screen_time,
+        "physical_activity": physical_activity, "work_study_hours": study_hours,
+        "water_intake": water_intake, "diet_quality": diet_quality, "sleep_time": sleep_time
+    }
     predicted_level = models["KNN"].predict(pd.DataFrame([user_data]))[0]
     tips = []
     if exam_stress >= 7:
@@ -271,9 +250,25 @@ def student():
         tips.append("😴 Don't sacrifice sleep before exams — memory needs rest!")
     if student_score > 60:
         tips.append("🧘 Take a 10-min break RIGHT NOW before continuing.")
-    student_challenges = ["Complete 1 pending assignment today 📝", "Study using Pomodoro: 25min on, 5min off ⏱️", "No phone for first 2 hours of study 📵", "Sleep before midnight tonight 🌙", "Drink water every hour during study 💧"]
-    save_user_memory(session["username"], {"date": datetime.now().strftime("%Y-%m-%d %H:%M"), "level": predicted_level, "score": round(student_score, 1), "mode": "student"})
-    return jsonify({"level": predicted_level, "score": round(student_score, 1), "tips": tips, "challenge": random.choice(student_challenges)})
+    student_challenges = [
+        "Complete 1 pending assignment today 📝",
+        "Study using Pomodoro: 25min on, 5min off ⏱️",
+        "No phone for first 2 hours of study 📵",
+        "Sleep before midnight tonight 🌙",
+        "Drink water every hour during study 💧"
+    ]
+    save_user_memory(session["username"], {
+        "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "level": predicted_level,
+        "score": round(student_score, 1),
+        "mode": "student"
+    })
+    return jsonify({
+        "level": predicted_level,
+        "score": round(student_score, 1),
+        "tips": tips,
+        "challenge": random.choice(student_challenges)
+    })
 
 @app.route("/api/history")
 @login_required
@@ -284,22 +279,33 @@ def history():
 def features():
     return jsonify(feature_importances)
 
+@app.route('/api/chat', methods=['POST'])
 def chat():
     data = request.json
     user_message = data.get('message', '')
-    model = genai.GenerativeModel('gemini-1.5-flash')
-    response = model.generate_content(
-        f"""You are Muskmoon 🌙, a warm and empathetic AI companion built into a wellness app.
-        You adapt your tone based on what the user needs.
-        If they're sad — be gentle and comforting like a best friend.
-        If they need advice — be wise and thoughtful like a therapist.
-        If they want to vent — just listen and validate.
-        If they're happy — be fun and celebratory.
-        Topics include relationships, stress, studies, family, feelings — anything personal.
-        Never judge. Always support. Keep responses concise and warm.
-        User says: {user_message}"""
-    )
-    return jsonify({'response': response.text})
+    import requests as req
+    api_key = os.environ.get("GEMINI_API_KEY")
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+    payload = {
+        "contents": [{
+            "parts": [{"text": f"""You are Muskmoon, a warm and empathetic AI companion built into a wellness app.
+You adapt your tone based on what the user needs.
+If they're sad - be gentle and comforting like a best friend.
+If they need advice - be wise and thoughtful like a therapist.
+If they want to vent - just listen and validate.
+If they're happy - be fun and celebratory.
+Topics include relationships, stress, studies, family, feelings - anything personal.
+Never judge. Always support. Keep responses concise and warm.
+User says: {user_message}"""}]
+        }]
+    }
+    response = req.post(url, json=payload)
+    result = response.json()
+    try:
+        reply = result['candidates'][0]['content']['parts'][0]['text']
+    except:
+        reply = str(result)
+    return jsonify({'response': reply})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
