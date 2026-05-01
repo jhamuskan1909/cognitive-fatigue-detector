@@ -8,7 +8,6 @@
 ![Gemini AI](https://img.shields.io/badge/Gemini-2.5_Flash-orange?style=for-the-badge&logo=google)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-red?style=for-the-badge&logo=scikit-learn)
 ![Render](https://img.shields.io/badge/Deployed-Render-purple?style=for-the-badge)
-![GSSoC](https://img.shields.io/badge/GSSoC-2026-orange?style=for-the-badge)
 
 **An AI-powered wellness web app that detects cognitive fatigue using lifestyle inputs, machine learning, and a Gemini-powered AI companion.**
 
@@ -215,17 +214,10 @@ Three models trained on a synthetic dataset of 500 samples with 7 lifestyle feat
 
 ---
 
-## My Contributions
-
-> *This section tracks my GSSoC 2026 contributions to this project.*
-
 ### Planned / In Progress
 - [ ] *Add what you're working on — e.g. "Add dark mode toggle to frontend"*
 - [ ] *e.g. "Write unit tests for /api/predict endpoint"*
 - [ ] *e.g. "Improve ML model accuracy with real dataset"*
-
-### Completed
-- *List PRs merged here as you go*
 
 ---
 
