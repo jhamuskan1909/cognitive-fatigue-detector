@@ -27,7 +27,6 @@
 - [Environment Variables](#environment-variables)
 - [API Endpoints](#api-endpoints)
 - [ML Models](#ml-models)
-- [My Contributions](#my-contributions)
 
 ---
 
@@ -214,13 +213,27 @@ Three models trained on a synthetic dataset of 500 samples with 7 lifestyle feat
 
 ---
 
-### Planned / In Progress
-- [ ] *Add what you're working on — e.g. "Add dark mode toggle to frontend"*
-- [ ] *e.g. "Write unit tests for /api/predict endpoint"*
-- [ ] *e.g. "Improve ML model accuracy with real dataset"*
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
-<div align="center">
-Contributing as part of GSSoC 2026 ❤️
-</div>
+## Acknowledgements
+
+- [Google Gemini API](https://aistudio.google.com/) — powering Muskmoon AI
+- [scikit-learn](https://scikit-learn.org/) — ML model training
+- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) — cloud database
+- [Render](https://render.com/) — free hosting
+
+---
+
+## Contributing
+
+Contributions are welcome! Feel free to open an issue or submit a pull request.
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit your changes (`git commit -m "feat: your feature"`)
+4. Push to the branch (`git push origin feature/your-feature`)
+5. Open a Pull Request
